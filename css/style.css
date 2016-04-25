@@ -1,0 +1,72 @@
+body {
+	font-family: Podkova, sans-serif;
+	color: rgb(85,98,112);
+	margin:0;
+	padding:0;
+}
+
+
+/*
+* MAP elements
+*/
+#map {
+	width:100%;
+	height:100%;
+}
+#mapContainer {
+	width:100%;
+	height:100%;
+	z-index:-1;
+	position:fixed;
+	top:0;
+	left:0;
+}
+
+
+/*
+* HEADER navigation elements
+*/
+
+.header {
+	color: #1BB0CE;
+	font-size:2em;
+	box-sizing: border-box;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	width:100%;
+	border-bottom: 0.1em solid #1BB0CE;
+	padding:0.2em;
+	background-color: rgba(255,255,255,0.85);
+}
+
+.header__elem {
+	padding-left:1em;
+}
+
+.header__hamburger {
+	font-size:1.5em;
+	margin-top:-0.17em;
+	cursor:pointer;
+}
+.header__hamburger:hover {
+	color:rgb(85,98,112);
+}
+.header__hamburger__inactive:before {
+	content: "\2630";
+}
+.header__elem__hamburger--inactive:before {
+	content: "x";
+}
+
+.header__elem__h1 {
+	font-weight: 800;
+}
+.header__elem__link:hover {
+	color: rgb(85,98,112);
+}
+
+/*
+* SIDEBAR
+*/
