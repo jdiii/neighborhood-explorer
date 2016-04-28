@@ -13,11 +13,12 @@
 		<section class="nav">
 
 			<div class="nav__list" data-bind="foreach: places">
-				<p><div class="nav__list__item" data-bind="click: function() { octopus.setCurrentPlace($data)}, text: $data.name"></div></p>
+				<p><div class="nav__list__item" data-bind="click: function() { octopus.setCurrentPlace($data); $('.nav').toggle();}, text: $data.name"></div></p>
 			</div>
 
 			<div class="nav__search">
 				<p><input class="nav__search__input" type="text" value="Filter..."></input></p>
+				<p><div class="nav__list__item nav__list__close">Close Menu</div></p>
 			</div>
 
 		</section>
@@ -26,35 +27,37 @@
 			<div class="header__elem header__elem__h1">Stuff in Cambridge!</div>
 		</section>
 
-		<section class="currentPlace" data-bind="with: currentPlace()">
-			<h1 class="currentPlace__name" data-bind="text: name"></h1>
-			<p class="currentPlace__address" data-bind="text: address"></p>
-			<div class="currentPlace__flex">
-				<div class="currentPlace__flex-item">
-					<div class="currentPlace__flex-item__images" data-bind="foreach: images">
-						<a data-bind="attr: {href: 'https://www.flickr.com/photos/' + $data.owner + '/' + $data.id}" target=_blank>
-							<img data-bind="attr: {src: 'https://farm' + $data.farm + '.staticflickr.com/' + $data.server + '/' + $data.id + '_' + $data.secret + '_s.jpg'}"></img>
-						</a>
-					</div>
-				</div>
-				<div class="currentPlace__flex-item">
-					<h4>Wiki Articles</h4>
-					<div class="currentPlace__flex-item__wiki" data-bind="foreach: articles">
-						<p><a target="_blank" data-bind="attr: {href: 'https://en.wikipedia.com/wiki/' + $data.title}, text: $data.title"></a></p>
-					</div>
-				</div>
-			</div>
-		</section>
-
 		<section id="mapContainer">
 			<div id="map"></div>
 		</section>
 
+		<script type="text/html" id="infoWindowTemplate">
+			<section id="infoWindow" data-bind="with: currentPlace()">
+				<h1 class="currentPlace__name" data-bind="text: name"></h1>
+				<p class="currentPlace__address" data-bind="text: address"></p>
+				<div class="currentPlace__flex">
+					<div class="currentPlace__flex-item">
+						<div data-bind="foreach: images">
+							<a class="currentPlace__flex-item__images" data-bind="attr: {href: 'https://www.flickr.com/photos/' + $data.owner + '/' + $data.id}" target=_blank>
+								<img data-bind="attr: {src: 'https://farm' + $data.farm + '.staticflickr.com/' + $data.server + '/' + $data.id + '_' + $data.secret + '_s.jpg'}">
+							</a>
+						</div>
+					</div>
+					<div class="currentPlace__flex-item">
+						<h4>Wiki Articles</h4>
+						<div data-bind="foreach: articles">
+							<p class="currentPlace__flex-item__wiki"><a target="_blank" data-bind="attr: {href: 'https://en.wikipedia.com/wiki/' + $data.title}, text: $data.title"></a></p>
+						</div>
+					</div>
+				</div>
+			</section>
+		</script>
+
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 		<script src="js/lib/knockout-3.4.0.js"></script>
 		<script src="js/lib/oauth-signature.min.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCbJSOXKFCM71Qwine69SdJOU4DIzcwj2s&libraries=places"></script>
 		<script src="js/main.js"></script>
-		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCbJSOXKFCM71Qwine69SdJOU4DIzcwj2s&libraries=places&callback=initMap" async defer></script>
 	</body>
 
 

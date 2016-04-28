@@ -152,3 +152,6 @@ body {
 	flex-wrap: wrap;
 	justify-content: space-around;
 }
+.currentPlace__flex-item__wiki {
+	display: inline-block;
+}

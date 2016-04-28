@@ -43,15 +43,11 @@ var rawData = [
 * The motivation to implement Model in an OO way was
 * to be able to switch between datasets...
 */
-var Model = function(data, map) {
-
+var Model = function(data) {
 	var data = data;
-	var map = map;
-
 	/*
 	* Model for the Place object
 	* We could use a raw JSON object, but this seems like more fun...
-	* ...not to mention that the Map Marker can be a child of its parent Place
 	*/
 	var Place = function(name, address, comment){
 		this.name = name;
@@ -60,48 +56,6 @@ var Model = function(data, map) {
 		this.articles = null;
 		this.images = null;
 	};
-	/*
-	* We will query for API data once, upon viewing a Place for the first time.
-	*/
-	Place.prototype.putWikiData = function(){
-
-	};
-	Place.prototype.putEventsData = function(){
-
-	};
-	Place.prototype.createMapMarker = function(map,done){
-		var that = this;
-		var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + this.address;
-		jQuery.getJSON(url, function(data){
-			if(data.status == 'OK'){
-				console.log(data);
-				that.lat = data.results[0].geometry.location.lat;
-				that.lng = data.results[0].geometry.location.lng;
-				var latlng = {lat: that.lat, lng: that.lng};
-				var marker = new google.maps.Marker({
-		    		position: latlng,
-		    		title: "Hello World!",
-					map: map,
-    				animation: google.maps.Animation.DROP,
-					draggable: false
-				});
-				that.marker = marker;
-				that.marker.addListener('click', function(){
-					model.octopus.setCurrentPlace(that);
-				});
-			} else {
-				console.log('Error retreving lat/long');
-			}
-		});
-	}
-	Place.prototype.setMap = function(map){
-		this.map = map;
-		this.createMapMarker(map);
-	}
-	Place.prototype.setModel = function(model){
-		this.model = model;
-	}
-
 	//places is the array of Places
 	this.places = (function(){
 		console.log(model);
@@ -111,32 +65,7 @@ var Model = function(data, map) {
 		}
 		return placeList;
 	})();
-
 };
-/*
-* Init(): the model passes references to itself to all Places
-* the model also gets a reference to the octopus
-*/
-Model.prototype.init = function(octopus){
-	var self = this;
-	this.octopus = octopus;
-	this.places.forEach(function(p){
-		p.model = self;
-	});
-	octopus.places(this.getAll());
-	//octopus.setCurrentPlace(this.places[0]);
-}
-Model.prototype.getAll = function(){
-	return this.places;
-};
-
-Model.prototype.setMap = function(map){
-	this.map = map;
-	this.places.forEach(function(e){
-		e.setMap(map);
-	});
-};
-
 
 /*
 * Octopus is the name of the ViewModel.
@@ -144,26 +73,55 @@ Model.prototype.setMap = function(map){
 * Contains the click handler between the
 */
 var Octopus = function(model){
+	var self = this;
 	this.model = model;
-	this.places = ko.observableArray([]);
-	this.currentPlace = ko.observable(0);
-};
-Octopus.prototype.setMap = function(map){
-	this.model.setMap(map);
-};
-Octopus.prototype.setCurrentPlace = function(place){
-	this.currentPlace(place);
-	if(model.map){
-		model.map.panTo(new google.maps.LatLng(this.currentPlace().lat, this.currentPlace().lng));
-	}
-	this.getWikiArticles();
-	this.getImages();
+	this.places = ko.observableArray(self.model.places);
+	//displayed places. Intially, all of them.
+	//this.currentPlaces = ko.observableArray(this.places);
+	//Currently displayed place. Initially, none.
+	this.currentPlace = ko.observable(null);
+	this.infoWindow = new google.maps.InfoWindow();
 };
 
-Octopus.prototype.getWikiArticles = function(){
-	var octo = this;
-	var place = this.currentPlace();
+Octopus.prototype.setCurrentPlace = function(place){
+
+	var self = this;
+	/* first, open the infoWindow and display the loading img */
+	self.infoWindow.open(self.map, place.marker);
+	self.infoWindow.setContent('<img width=16 height=16 src="img/load.gif">');
+
+	if(self.map){
+		self.map.panTo(new google.maps.LatLng(place.lat, place.lng));
+	}
+
+	/* meanwhile get the ajax data*/
+	self.getWikiArticles(place,function(place){
+		self.getImages(place,function(place){
+
+			/* when ajax calls are complete, display everything */
+			self.infoWindow.setContent(document.getElementById("infoWindowTemplate").innerHTML);
+			if(document.getElementById("infoWindowTemplate").innerHTML){
+				ko.cleanNode(document.getElementById("infoWindow"));
+			}
+			ko.applyBindings(self, document.getElementById("infoWindow"));
+			self.currentPlace(place);
+
+		});
+	});
+
+};
+
+/*
+* gets Wikipedia data from the Wikiapedia API for the @param place
+* @param done is the method to run when the ajax request is complete,
+* or if we find that we already have the articles data from a previous ajax call
+*/
+Octopus.prototype.getWikiArticles = function(place, done){
+
+	var place = place;
+
 	if(place.articles === null){
+
 		var url = 'https://en.wikipedia.org/w/api.php';
 
 		var parameters = {
@@ -187,25 +145,34 @@ Octopus.prototype.getWikiArticles = function(){
 				place.articles = [{title: ':(', snippet: 'There was an error retrieving events.'}];
 			},
 			success: function(data){
-				console.log(data);
+
 				place.articles = [];
+
 				data.query.search.forEach(function(article){
 					var obj = {};
 					obj.title = article.title;
 					obj.snippet = article.snippet;
 					place.articles.push(obj);
+
 				});
-				octo.setCurrentPlace(octo.currentPlace());
+
+				done(place);
 			}
 		});
+
 	} else {
-		//let knockout do the work
+		done(place);
 	}
 };
 
-Octopus.prototype.getImages = function(){
-	var octo = this;
-	var place = this.currentPlace();
+/*
+* gets Flickr data from the for the @param place
+* @param done is the method to run when the ajax request is complete,
+* or if we find that we already have the image data from a previous ajax call
+*/
+Octopus.prototype.getImages = function(place, done){
+	var place = place;
+
 	if(place.images === null){
 		var key = '058441ee782dc38f873dc3b3dbd9ebd5';
 		var url = 'https://api.flickr.com/services/rest/';
@@ -214,7 +181,7 @@ Octopus.prototype.getImages = function(){
 			method: 'flickr.photos.search',
 			api_key: key,
 			text: place.name,
-			per_page: 10,
+			per_page: 5,
 			format: 'json',
 			nojsoncallback: 1
 		};
@@ -231,36 +198,52 @@ Octopus.prototype.getImages = function(){
 			success: function(data){
 				place.images = [];
 				place.images = data.photos.photo;
-				octo.setCurrentPlace(octo.currentPlace());
+				done(place);
 			}
 		});
+
 	} else {
-		//let knockout do the work
+		done(place);
 	}
 };
 
-/* Oh yeah.... Apply bindings!!! */
-var model = new Model(rawData);
-var octopus = new Octopus(model);
-model.init(octopus);
-ko.applyBindings(octopus);
-
 /*
-* Add event listeners for the hamburger menu
+* createMarker
+* @param place is the place to add a marker to
+* @param done should be callback function to execute on completion of the ajax request
 */
-$(".header").on('click','.header__hamburger',function(){
-	$('.nav').toggle("0.25s");
-});
-$(".nav").on('click',function(){
-	$('.nav').toggle();
-})
-
+Octopus.prototype.createMarker = function(place,done){
+	var place = place;
+	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + place.address;
+	jQuery.getJSON(url, function(data){
+		if(data.status == 'OK'){
+			console.log(data);
+			place.lat = data.results[0].geometry.location.lat;
+			place.lng = data.results[0].geometry.location.lng;
+			var latlng = {lat: place.lat, lng: place.lng};
+			var marker = new google.maps.Marker({
+				position: latlng,
+				title: "Hello World!",
+				animation: google.maps.Animation.DROP,
+				draggable: false
+			});
+			place.marker = marker;
+			/*place.marker.addListener('click', function(){
+				model.octopus.setCurrentPlace(that);
+			});*/
+			done(place.marker);
+		} else {
+			console.log('Error retreving lat/long');
+			done(place.marker);
+		}
+	});
+};
 /*
 * Google Maps functionality
 * initMap() is the callback to the Google Maps call in index.html
 * Add the map as a property of octopus.
 */
-function initMap() {
+Octopus.prototype.initMap = function() {
 	var height = window.innerHeight;
 	document.getElementById("mapContainer").style.height = height + 'px';
 	var styles = [
@@ -285,5 +268,84 @@ function initMap() {
 		styles: styles,
 		mapTypeId: google.maps.MapTypeId.TERRAIN
 	});
-	octopus.setMap(map);
+
+	return map;
 };
+//filter
+Octopus.prototype.handleFocus = function(query){
+
+	if(query == 'Filter...'){
+		$('.nav__search__input').val('');
+	}
+
+};
+Octopus.prototype.handleKeyup = function(query){
+
+	var self = this;
+
+	if(query == ''){
+		self.places(model.places);
+		this.places().forEach(function(p){
+			p.marker.setVisible(true);
+		});
+		this.places();
+		this.currentPlace(null);
+	}
+
+	if(query != ''){
+		/* make a new places array*/
+		var places = [];
+		octopus.model.places.forEach(function(p){
+			var q = query.toLowerCase();
+			if(p.name.toLowerCase().indexOf(q) != -1 || p.address.toLowerCase().indexOf(q) != -1 || p.comment.toLowerCase().indexOf(q) != -1){
+				places.push(p);
+			}
+		});
+		/* set marker visibility to false for all places */
+		self.places().forEach(function(p){
+			p.marker.setVisible(false);
+		});
+		/* set marker visibility to true for places in the array */
+		places.forEach(function(p){
+			p.marker.setVisible(true);
+		});
+		/* send octopus the new places */
+		self.places(places);
+		self.currentPlace(null);
+	}
+
+};
+
+/* Initialize model and octopus*/
+var model = new Model(rawData);
+var octopus = new Octopus(model);
+/* set up */
+octopus.map = octopus.initMap();
+/* initialize map markers */
+octopus.places().forEach(function(place){
+	octopus.createMarker(place, function(marker){
+		marker.setMap(octopus.map);
+		marker.addListener('click',function(){
+			octopus.setCurrentPlace(place);
+		});
+	});
+});
+/* apply knockout bindings */
+ko.applyBindings(octopus);
+
+/*
+* Event listeners for the hamburger menu
+*/
+$(".header").on('click','.header__hamburger',function(){
+	$('.nav').toggle("0.25s");
+});
+$(".nav__list__close").on('click',function(){
+	$('.nav').toggle();
+});
+$(".nav__search__input").on('focus',function(){
+	var val = $(this).val();
+	octopus.handleFocus(val);
+});
+$(".nav__search__input").on('keyup',function(){
+	octopus.handleKeyup($(".nav__search__input").val());
+});
