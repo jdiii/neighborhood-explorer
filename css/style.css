@@ -10,16 +10,15 @@ body {
 * MAP elements
 */
 #map {
-	width:100%;
 	height:100%;
 }
 #mapContainer {
-	width:100%;
-	height:100%;
 	z-index:-1;
 	position:fixed;
-	top:0;
-	left:0;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
 }
 
 
@@ -29,66 +28,83 @@ body {
 
 .header {
 	color: #1BB0CE;
-	font-size:2em;
+	font-size: 3em;
 	box-sizing: border-box;
 	margin: 0 auto;
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
+	flex-direction: row-reverse;
 	width:100%;
-	border-bottom: 0.1em solid #1BB0CE;
-	padding:0.2em;
-	background-color: rgba(255,255,255,0.85);
+	z-index: 0;
 }
 
 .header__elem {
-	padding-left:1em;
+	background-color: rgba(255,255,255,0.95);
+	text-shadow: 0 0 1em white;
+	margin: 0.25em;
+	height: 1em;
 }
 
-.header__hamburger {
-	font-size: 1.5em;
-	margin-top: -0.17em;
+.header__elem__hamburger {
+	line-height: 1.1em;
 	cursor: pointer;
 }
-.header__hamburger:hover {
+.header__elem__hamburger:hover {
 	color: rgb(85,98,112);
 }
-.header__hamburger__inactive:before {
+.header__elem__hamburger:before {
 	content: "\2630";
 }
-.header__elem__hamburger--inactive:before {
-	content: "x";
-}
-
 .header__elem__h1 {
 	font-weight: 800;
 }
-.header__elem__link:hover {
-	color: rgb(85,98,112);
+
+/*
+* Responsive Elements
+* 1. the font size in the header shrinks
+* 2. the width of the infoWindow is fixed at lower resolutions
+*
+*/
+@media (max-width: 600px) {
+  .header__elem {
+    font-size: 0.5em;
+  }
+  .header__elem__hamburger {
+    font-size: 1em;
+  }
+
+  #infoWindow {
+	  width: 220px;
+	  height: 212px;
+	  overflow: auto;
+  }
+
 }
 
 /*
-* NAV. it's an overlay.
+* NAV. list of places + a search input.
 */
 .nav {
-	display:none;
-	position:fixed;
-	top: 0;
+	display: none;
+	position: absolute;
 	left: 0;
-	margin: 0;
-	padding: 2em 0;
-	width: 100%;
-	height: 100%;
+	top: 0;
+	bottom: 0;
+	right: 0;
 	background-color: rgba(85,98,112,0.9);
-	flex-direction: column;
 	color: white;
 	text-align: center;
+	z-index: 10000;
 }
+
 .nav__search {
 	margin: 1em auto;
 }
+.nav2 {
+}
 .nav__search__input {
-	font-size: 2em;
+	font-size: 1.2em;
 	border: 0.2em #1BB0CE solid;
 	border-radius: 0.2em;
 	padding: 0.2em;
@@ -97,23 +113,24 @@ body {
 .nav__list__item {
 	max-width: 320px;
 	margin: 0.25em auto; /*TODO add media query*/
-	font-size: 2em;
+	font-size: 1.2em;
 	background-color: #1BB0CE;
 	cursor: pointer;
+	clear: both;
 }
-.nav__item__selected {
-	font-weight: bold;
+.nav__float__close {
+	float: right;
+	color: white;
+	text-decoration: underline;
+	font-size: 1.5em;
+	margin-right:1em;
+	cursor: pointer;
 }
 
 /*
 * CurrentPlace: displays detail of currentPlace()
 */
 .currentPlace {
-	/*width: 100%;
-	position: fixed;
-	left: 0;
-	bottom: 0;*/
-	max-width: 320px;
 	margin-top: 2em;
 	border-top: 0.2em solid #1BB0CE;
 	border-bottom: 0.2em solid #1BB0CE;
@@ -147,11 +164,14 @@ body {
 	text-align:center;
 	color: #1BB0CE;
 }
-.currentPlace__flex {
-	display:flex;
-	flex-wrap: wrap;
-	justify-content: space-around;
+.currentPlace__section {
+	text-align: center;
 }
-.currentPlace__flex-item__wiki {
+.currentPlace__section__wiki {
 	display: inline-block;
+	padding: 0.25em;
+}
+.currentPlace__section__wikiImg {
+	height: 1em;
+	width: 1em;
 }

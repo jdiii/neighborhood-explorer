@@ -10,44 +10,56 @@
 	</head>
 
 	<body>
-		<section class="nav">
 
-			<div class="nav__list" data-bind="foreach: places">
-				<p><div class="nav__list__item" data-bind="click: function() { octopus.setCurrentPlace($data); $('.nav').toggle();}, text: $data.name"></div></p>
-			</div>
-
-			<div class="nav__search">
-				<p><input class="nav__search__input" type="text" value="Filter..."></input></p>
-				<p><div class="nav__list__item nav__list__close">Close Menu</div></p>
-			</div>
-
-		</section>
 		<section class="header">
-			<div class="header__hamburger header__hamburger__inactive"></div>
-			<div class="header__elem header__elem__h1">Stuff in Cambridge!</div>
+			<div class="header__elem header__elem__hamburger"></div>
+			<div class="header__elem header__elem__h1">Tour Boston!</div>
 		</section>
 
 		<section id="mapContainer">
 			<div id="map"></div>
 		</section>
 
+		<section id=nav class="nav">
+
+			<div class="nav2">
+				<div class="nav__float__close">Close</div>
+
+				<div class="nav__list" data-bind="foreach: places">
+					<div class="nav__list__item" data-bind="click: function() { octopus.setCurrentPlace($data); $('.nav').toggle();}, text: $data.name"></div>
+				</div>
+
+				<div class="nav__search">
+					<input class="nav__search__input" type="text" value="Filter..."></input>
+					<div class="nav__list__item nav__list__close">Close Menu</div>
+				</div>
+			</div>
+
+		</section>
+
 		<script type="text/html" id="infoWindowTemplate">
 			<section id="infoWindow" data-bind="with: currentPlace()">
 				<h1 class="currentPlace__name" data-bind="text: name"></h1>
 				<p class="currentPlace__address" data-bind="text: address"></p>
-				<div class="currentPlace__flex">
-					<div class="currentPlace__flex-item">
-						<div data-bind="foreach: images">
-							<a class="currentPlace__flex-item__images" data-bind="attr: {href: 'https://www.flickr.com/photos/' + $data.owner + '/' + $data.id}" target=_blank>
-								<img data-bind="attr: {src: 'https://farm' + $data.farm + '.staticflickr.com/' + $data.server + '/' + $data.id + '_' + $data.secret + '_s.jpg'}">
-							</a>
-						</div>
+				<section class="currentPlace__section">
+					<div data-bind="if: articles.error">
+						<span data-bind="text: articles.error"></span>
 					</div>
-					<div class="currentPlace__flex-item">
-						<h4>Wiki Articles</h4>
-						<div data-bind="foreach: articles">
-							<p class="currentPlace__flex-item__wiki"><a target="_blank" data-bind="attr: {href: 'https://en.wikipedia.com/wiki/' + $data.title}, text: $data.title"></a></p>
+					<span data-bind="foreach: articles">
+						<div class="currentPlace__section__wiki">
+							<img src="img/wikipedia.png" class="currentPlace__section__wikiImg">
+							<a target="_blank" data-bind="attr: {href: 'https://en.wikipedia.com/wiki/' + $data.title}, text: $data.title"></a>
 						</div>
+					</span>
+				</div>
+				<section class="currentPlace__section">
+					<div data-bind="if: images.error">
+						<span data-bind="text: images.error"></span>
+					</div>
+					<div data-bind="foreach: images">
+						<a class="currentPlace__section__images" data-bind="attr: {href: 'https://www.flickr.com/photos/' + $data.owner + '/' + $data.id}" target=_blank>
+							<img data-bind="attr: {src: 'https://farm' + $data.farm + '.staticflickr.com/' + $data.server + '/' + $data.id + '_' + $data.secret + '_s.jpg'}">
+						</a>
 					</div>
 				</div>
 			</section>

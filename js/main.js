@@ -1,39 +1,49 @@
 'use strict'
 
 /*
-* In lieu of using an actual database, passing this raw data to my Model.
-* Could use this data directly, but that would make some OOP-type things harder.
+* In lieu of using an actual database, passing this "raw data" to my Model.
+* Could use this data directly.... but instead inserting into a Model object
 */
 var rawData = [
 	{
-		name: "Hops Test Kitchen",
-		address: "1248 Cambridge St, Cambridge, MA 02139",
-		comment: "Continually (and unfairly) empty, but pretty friendly bar with a great chef. Favorite part: Sierra Nevada Celebration Ale still on tap in April (did I mention it's usually empty?)..."
+		name: "Fenway Park",
+		address: "4 Yawkey Way, Boston, MA 02215"
 	},
 	{
-		name: "Kimchi Kitchen",
-		address: "847 Cambridge St, Cambridge, MA 02141",
-		comment: "Major obsession with this casual authentic-Korean restaurant. Is it really possible this beef bulgogi is just beef and spices? Inspired to make bibimbap every other night for weeks."
+		name: "Bunker Hill Monument",
+		address: "Monument Sq, Charlestown, MA 02129"
 	},
 	{
-		name: "Back Bar",
-		address: "7 Sanborn Ct, Somerville, MA 02143",
-		comment: "An uberhip speakeasy in uberhip Union Square. If you can stop worrying that the overall-ed lumbersexual bartender's beard-hairs have drifted into your cocktail, you'll realize it's the best you've ever had."
+		name: "Old North Church",
+		address: "193 Salem St, Boston, MA 02113"
 	},
 	{
-		name: "CBC",
-		address: "1 Kendall Square, Cambridge, MA 02139",
-		comment: "Cambridge ordinance prevents me from going to Cambridge Brewing Co and merely having _beers_ outside, so it's usually _fries_ and beers outside."
+		name: "Paul Revere House",
+		address: "19 N Square, Boston, MA 02113",
 	},
 	{
-		name: "Alden & Harlow",
-		address: "40 Brattle St, Cambridge, MA 02138",
-		comment: "Small plates for big prices, but it's worth it."
+		name: "Massachusetts State House",
+		address: "24 Beacon St, Boston, MA 02133"
 	},
 	{
-		name: "River Bar",
-		address: "661 Assembly Row, Somerville, MA 02145",
-		comment: "Assembly Row is a strange upscale strip mall... there is an Ikea Way with no Ikea on it, new buildings built to look old... so this odd cocktail bar by the river with all-year-round outdoor seating fits right in."
+		name: "Harvard Museum of Natural History",
+		address: "26 Oxford St, Cambridge, MA 02138"
+	},
+	{
+		name: "Old State House",
+		address: "206 Washington Street, Boston, MA 02109"
+	},
+	{
+		name: "Massachusetts State House",
+		address: "24 Beacon St, Boston, MA 02133"
+	},
+	{
+		name: "Trinity Church",
+		address: "206 Boylston St, Boston, MA"
+	},
+	{
+		name: "Quincy Market",
+		address: "1 Faneuil Hall Square, Quincy Market, Boston, MA 02109"
 	}
 ];
 
@@ -41,7 +51,7 @@ var rawData = [
 /*
 * Model.
 * The motivation to implement Model in an OO way was
-* to be able to switch between datasets...
+* to be able to switch between datasets... didn't actually end up doing that.
 */
 var Model = function(data) {
 	var data = data;
@@ -74,32 +84,45 @@ var Model = function(data) {
 */
 var Octopus = function(model){
 	var self = this;
-	this.model = model;
-	this.places = ko.observableArray(self.model.places);
-	//displayed places. Intially, all of them.
-	//this.currentPlaces = ko.observableArray(this.places);
-	//Currently displayed place. Initially, none.
-	this.currentPlace = ko.observable(null);
-	this.infoWindow = new google.maps.InfoWindow();
+	self.model = model;
+	self.places = ko.observableArray(self.model.places);
+	self.currentPlace = ko.observable(null);
+	self.infoWindow = new google.maps.InfoWindow();
+	self.infoWindow.addListener('closeclick',function(){
+		self.currentPlace().marker.setIcon(null);
+	});
 };
 
 Octopus.prototype.setCurrentPlace = function(place){
 
+	/* set the selected map marker icon to a star */
+	if(this.currentPlace()){
+		this.currentPlace().marker.setIcon(null); //un-star prev marker
+	}
+	place.marker.setIcon({
+		url: 'img/star.svg', //star new marker
+	});
+
 	var self = this;
-	/* first, open the infoWindow and display the loading img */
+
+	/* open the infoWindow and display the loading img */
 	self.infoWindow.open(self.map, place.marker);
 	self.infoWindow.setContent('<img width=16 height=16 src="img/load.gif">');
 
+	/* pan to the selected marker */
 	if(self.map){
 		self.map.panTo(new google.maps.LatLng(place.lat, place.lng));
+		self.map.panBy(0, -82); //this keeps the infowindow from displaying over the header, which displays with ~72px height
 	}
 
 	/* meanwhile get the ajax data*/
 	self.getWikiArticles(place,function(place){
 		self.getImages(place,function(place){
-
+			self.infoWindow.close(); //this MIGHT make rendering look slightly nicer
 			/* when ajax calls are complete, display everything */
 			self.infoWindow.setContent(document.getElementById("infoWindowTemplate").innerHTML);
+			self.infoWindow.open(self.map, place.marker);
+    		//self.map.setCenter(place.marker.getPosition())
 			if(document.getElementById("infoWindowTemplate").innerHTML){
 				ko.cleanNode(document.getElementById("infoWindow"));
 			}
@@ -129,6 +152,7 @@ Octopus.prototype.getWikiArticles = function(place, done){
 			list: 'search',
 			srsearch: place.name,
 			srwhat: 'text',
+			srlimit: '3',
 			format: 'json'
 		};
 
@@ -142,7 +166,7 @@ Octopus.prototype.getWikiArticles = function(place, done){
 	            'Api-User-Agent': 'Neighborhood-App/1.0'
 	        },
 			error: function(){
-				place.articles = [{title: ':(', snippet: 'There was an error retrieving events.'}];
+				place.articles = {error: 'There was an error retrieving articles.'};
 			},
 			success: function(data){
 
@@ -174,6 +198,7 @@ Octopus.prototype.getImages = function(place, done){
 	var place = place;
 
 	if(place.images === null){
+
 		var key = '058441ee782dc38f873dc3b3dbd9ebd5';
 		var url = 'https://api.flickr.com/services/rest/';
 
@@ -190,13 +215,12 @@ Octopus.prototype.getImages = function(place, done){
 			url: url,
 			data: parameters,
 			method: 'GET',
-			timeout: 5000,
+			timeout: 5000, //after 5 seconds, --> error
 			dataType: 'json',
 			error: function(e){
-				place.images = [{error: "Error retrieving images"}];
+				place.images = {error: "Error retrieving images"};
 			},
 			success: function(data){
-				place.images = [];
 				place.images = data.photos.photo;
 				done(place);
 			}
@@ -213,34 +237,49 @@ Octopus.prototype.getImages = function(place, done){
 * @param done should be callback function to execute on completion of the ajax request
 */
 Octopus.prototype.createMarker = function(place,done){
+
+	var self = this;
 	var place = place;
+
+	/*
+	* ajax request for gmaps geocode
+	*/
 	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + place.address;
 	jQuery.getJSON(url, function(data){
 		if(data.status == 'OK'){
-			console.log(data);
+
+			console.log('Status OK for ' + place.name + '\'s geodata.');
+
 			place.lat = data.results[0].geometry.location.lat;
 			place.lng = data.results[0].geometry.location.lng;
+
 			var latlng = {lat: place.lat, lng: place.lng};
+
 			var marker = new google.maps.Marker({
 				position: latlng,
 				title: "Hello World!",
 				animation: google.maps.Animation.DROP,
 				draggable: false
 			});
+
 			place.marker = marker;
-			/*place.marker.addListener('click', function(){
-				model.octopus.setCurrentPlace(that);
-			});*/
+
 			done(place.marker);
+
 		} else {
-			console.log('Error retreving lat/long');
+
+			console.log('Error retreving lat/long for ' + ''); //the API is rate limited, so this is kinda useful
+
+			self.infoWindow.setContent('Error: no geodata. You may have used all your geocode API credits :(');
+
+			self.infoWindow.open(self.map); //display error message onscreen
+
 			done(place.marker);
 		}
 	});
 };
 /*
-* Google Maps functionality
-* initMap() is the callback to the Google Maps call in index.html
+* Google Maps initialization
 * Add the map as a property of octopus.
 */
 Octopus.prototype.initMap = function() {
@@ -266,12 +305,35 @@ Octopus.prototype.initMap = function() {
 		scrollwheel: true,
 		zoom: 13,
 		styles: styles,
-		mapTypeId: google.maps.MapTypeId.TERRAIN
+		mapTypeId: google.maps.MapTypeId.TERRAIN,
+		mapTypeControl: false,
+  		zoomControl: true,
+  		mapTypeControl: false,
+  		scaleControl: false,
+  		streetViewControl: false,
+  		rotateControl: false,
+  		fullscreenControl: false,
+		scrollwheel: false, //I was getting weird scrolling effects so added some options (none seemed to do anything...)
+		draggable: false
 	});
+
+	/* resize map container when the window is resized */
+	$(window).on('resize',function(){
+		var height = window.innerHeight;
+		document.getElementById("mapContainer").style.height = height + 'px';
+	});
+
 
 	return map;
 };
-//filter
+
+
+/*
+* handleFocus is fired when there's a focus event on the search input
+* Takes an @param query from the input textbox
+* If the textbox contains the filler text "Filter...",
+* it gets cleared out of the textbox.
+*/
 Octopus.prototype.handleFocus = function(query){
 
 	if(query == 'Filter...'){
@@ -279,6 +341,16 @@ Octopus.prototype.handleFocus = function(query){
 	}
 
 };
+
+/*
+* handleKeyup takes a search @param query
+* and filters which map markers are shown
+* and which navigation links are shown
+* based on the search result
+*
+* searches both place.address and place.name for the query string
+*/
+
 Octopus.prototype.handleKeyup = function(query){
 
 	var self = this;
@@ -297,7 +369,7 @@ Octopus.prototype.handleKeyup = function(query){
 		var places = [];
 		octopus.model.places.forEach(function(p){
 			var q = query.toLowerCase();
-			if(p.name.toLowerCase().indexOf(q) != -1 || p.address.toLowerCase().indexOf(q) != -1 || p.comment.toLowerCase().indexOf(q) != -1){
+			if(p.name.toLowerCase().indexOf(q) != -1 || p.address.toLowerCase().indexOf(q) != -1){
 				places.push(p);
 			}
 		});
@@ -316,11 +388,13 @@ Octopus.prototype.handleKeyup = function(query){
 
 };
 
+
 /* Initialize model and octopus*/
 var model = new Model(rawData);
 var octopus = new Octopus(model);
-/* set up */
+/* set up Map */
 octopus.map = octopus.initMap();
+
 /* initialize map markers */
 octopus.places().forEach(function(place){
 	octopus.createMarker(place, function(marker){
@@ -333,19 +407,29 @@ octopus.places().forEach(function(place){
 /* apply knockout bindings */
 ko.applyBindings(octopus);
 
+
 /*
-* Event listeners for the hamburger menu
+* Event listeners for the hamburger menu and navigation
 */
-$(".header").on('click','.header__hamburger',function(){
-	$('.nav').toggle("0.25s");
+
+//Open the navigation menu
+$(".header").on('click','.header__elem__hamburger',function(){
+	$('.nav').toggle();
+	octopus.infoWindow.close();
+	if(octopus.currentPlace()){
+		octopus.currentPlace().marker.setIcon(null);
+	}
 });
-$(".nav__list__close").on('click',function(){
+//close the navigation menu when close buttons are pressed
+$(".nav__list__close, .nav__float__close").on('click',function(){
 	$('.nav').toggle();
 });
+//when Search input is focused, clear out the filler "Filter..." text
 $(".nav__search__input").on('focus',function(){
 	var val = $(this).val();
 	octopus.handleFocus(val);
 });
+//refine search results every time you enter a letter in search input
 $(".nav__search__input").on('keyup',function(){
 	octopus.handleKeyup($(".nav__search__input").val());
 });

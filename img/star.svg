@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   width="25"
+   height="25"
+   id="svg2316"
+   sodipodi:version="0.32"
+   inkscape:version="0.45.1"
+   sodipodi:docname="echo-emblem-star-48-table.svg"
+   sodipodi:docbase="/home/martin/Download"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <metadata
+     id="metadata341">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:window-height="616"
+     inkscape:window-width="776"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     guidetolerance="10.0"
+     gridtolerance="10.0"
+     objecttolerance="10.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     inkscape:zoom="1"
+     inkscape:cx="12.576651"
+     inkscape:cy="6.5271226"
+     inkscape:window-x="72"
+     inkscape:window-y="25"
+     inkscape:current-layer="svg2316"
+     width="25px"
+     height="25px" />
+  <defs
+     id="defs2318">
+    <radialGradient
+       cx="36.011189"
+       cy="58.321655"
+       r="12.3861"
+       fx="36.011189"
+       fy="58.321655"
+       id="XMLID_20_"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.0747807,-0.482397,0.4335347,1.8646249,-62.047007,-34.034509)">
+      <stop
+         style="stop-color:#ffff3e;stop-opacity:1"
+         offset="0"
+         id="stop623" />
+      <stop
+         style="stop-color:#ff9900;stop-opacity:1"
+         offset="1"
+         id="stop635" />
+    </radialGradient>
+    <linearGradient
+       x1="20.846701"
+       y1="78.684601"
+       x2="33.691002"
+       y2="46.8937"
+       id="XMLID_19_"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         style="stop-color:#383838;stop-opacity:1"
+         offset="0.19660001"
+         id="stop606" />
+      <stop
+         style="stop-color:#414141;stop-opacity:1"
+         offset="0.2201"
+         id="stop608" />
+      <stop
+         style="stop-color:#898989;stop-opacity:1"
+         offset="0.4113"
+         id="stop610" />
+      <stop
+         style="stop-color:#b6b6b6;stop-opacity:1"
+         offset="0.54879999"
+         id="stop612" />
+      <stop
+         style="stop-color:#c7c7c7;stop-opacity:1"
+         offset="0.61799997"
+         id="stop614" />
+      <stop
+         style="stop-color:#cfcfcf;stop-opacity:1"
+         offset="1"
+         id="stop616" />
+    </linearGradient>
+    <linearGradient
+       x1="31.8281"
+       y1="32.480499"
+       x2="25.729799"
+       y2="68.0541"
+       id="XMLID_18_"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         style="stop-color:#9eabb0;stop-opacity:1"
+         offset="0"
+         id="stop595" />
+      <stop
+         style="stop-color:#707f86;stop-opacity:1"
+         offset="0.2956"
+         id="stop597" />
+      <stop
+         style="stop-color:#2a3d47;stop-opacity:1"
+         offset="0.77579999"
+         id="stop599" />
+      <stop
+         style="stop-color:#0e232e;stop-opacity:1"
+         offset="1"
+         id="stop601" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#XMLID_18_"
+       id="linearGradient2498"
+       gradientUnits="userSpaceOnUse"
+       x1="31.8281"
+       y1="32.480499"
+       x2="25.729799"
+       y2="68.0541" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#XMLID_19_"
+       id="linearGradient2500"
+       gradientUnits="userSpaceOnUse"
+       x1="20.846701"
+       y1="78.684601"
+       x2="33.691002"
+       y2="46.8937" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#XMLID_20_"
+       id="linearGradient3477"
+       x1="36.276577"
+       y1="49.685127"
+       x2="27.174999"
+       y2="80.419807"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#XMLID_18_"
+       id="linearGradient2184"
+       gradientUnits="userSpaceOnUse"
+       x1="31.8281"
+       y1="32.480499"
+       x2="25.729799"
+       y2="68.0541" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#XMLID_19_"
+       id="linearGradient2186"
+       gradientUnits="userSpaceOnUse"
+       x1="20.846701"
+       y1="78.684601"
+       x2="33.691002"
+       y2="46.8937" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#XMLID_20_"
+       id="linearGradient2188"
+       gradientUnits="userSpaceOnUse"
+       x1="36.276577"
+       y1="49.685127"
+       x2="27.174999"
+       y2="80.419807" />
+  </defs>
+  <g
+     id="g2178"
+     transform="translate(-0.2237785,-2.9091202)">
+    <polygon
+       id="polygon603"
+       style="fill:url(#linearGradient2184)"
+       transform="matrix(0.4649551,0,0,0.4649551,8.5000049e-2,-15.275932)"
+       points="26.27,41.044 28.992,39.799 36.525,55.384 54.53,58.123 53.266,60.553 42.285,71.533 45.025,87.7 43.068,91.38 27.069,83.047 9.702,92.312 13.008,72.993 0,60.062 3.357,57.824 19.013,55.354 26.27,41.044 " />
+    <polygon
+       id="polygon618"
+       style="fill:url(#linearGradient2186)"
+       transform="matrix(0.4649551,0,0,0.4649551,8.5000049e-2,-15.275932)"
+       points="27.058,42.934 28.323,42.307 35.362,56.835 51.9,59.263 51.04,60.584 40.179,71.134 42.873,86.751 41.953,88.935 29.151,80.667 24.04,77.001 17.245,69.922 2.9,60.519 5.216,59.173 20.657,56.751 27.058,42.934 " />
+    <polygon
+       id="polygon620"
+       style="fill:#ffffff"
+       transform="matrix(0.4649551,0,0,0.4649551,8.5000049e-2,-15.275932)"
+       points="27.005,43.003 34.458,58.105 51.126,60.527 39.065,72.284 41.913,88.883 27.005,81.045 12.097,88.883 14.943,72.284 2.884,60.527 19.552,58.105 27.005,43.003 " />
+    <polygon
+       id="polygon637"
+       style="fill:url(#linearGradient2188);fill-opacity:1"
+       transform="matrix(0.4649551,0,0,0.4649551,8.5000049e-2,-15.275932)"
+       points="27.176,50.351 32.447,61.032 44.236,62.746 35.706,71.061 37.719,82.802 27.176,77.258 16.631,82.802 18.645,71.061 10.114,62.746 21.903,61.032 27.176,50.351 " />
+  </g>
+</svg>
