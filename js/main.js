@@ -1,5 +1,5 @@
+/* globals window, document, $, jQuery, google, console */
 'use strict';
-/* global google */
 
 /*
 * In lieu of using an actual database, passing this "raw data" to my Model.
@@ -66,7 +66,8 @@ var Model = function(data) {
 	//places is the array of Places
 	this.places = (function(){
 		var placeList = [];
-		for(var i = 0; i < data.length; i++){
+		var dataLength = data.length;
+		for(var i = 0; i < dataLength; i++){
 			placeList.push(new Place(data[i].name, data[i].address, data[i].comment));
 		}
 		return placeList;
@@ -160,21 +161,19 @@ Octopus.prototype.getWikiArticles = function(place, done){
 			dataType: 'jsonp',
 			headers: {
 	            'Api-User-Agent': 'Neighborhood-App/1.0'
-	        },
-			success: function(data){
+	        }
+		}).done(function(data){
+			place.articles = [];
 
-				place.articles = [];
+			data.query.search.forEach(function(article){
+				var obj = {};
+				obj.title = article.title;
+				obj.snippet = article.snippet;
+				place.articles.push(obj);
 
-				data.query.search.forEach(function(article){
-					var obj = {};
-					obj.title = article.title;
-					obj.snippet = article.snippet;
-					place.articles.push(obj);
+			});
 
-				});
-
-				done(place);
-			}
+			done(place);
 		}).fail(function(){
 			place.articles = {error: 'There was an error retrieving articles.'};
 			done(place);
@@ -212,11 +211,10 @@ Octopus.prototype.getImages = function(place, done){
 			data: parameters,
 			method: 'GET',
 			timeout: 5000, //after 5 seconds, --> error
-			dataType: 'json',
-			success: function(data){
-				place.images = data.photos.photo;
-				done(place);
-			}
+			dataType: 'json'
+		}).done(function(data){
+			place.images = data.photos.photo;
+			done(place);
 		}).fail(function(){
 			place.images = {error: "Error retrieving images"};
 			done(place);
