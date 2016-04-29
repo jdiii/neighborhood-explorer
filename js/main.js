@@ -34,16 +34,16 @@ var rawData = [
 		address: "206 Washington Street, Boston, MA 02109"
 	},
 	{
-		name: "Massachusetts State House",
-		address: "24 Beacon St, Boston, MA 02133"
-	},
-	{
 		name: "Trinity Church",
 		address: "206 Boylston St, Boston, MA"
 	},
 	{
 		name: "Quincy Market",
 		address: "1 Faneuil Hall Square, Quincy Market, Boston, MA 02109"
+	},
+	{
+		name: "Old State House",
+		address: "206 Washington St, Boston, MA 02109"
 	}
 ];
 
