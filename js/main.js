@@ -1,4 +1,4 @@
-/* globals window, document, $, jQuery, google, console */
+/* globals window, document, $, jQuery, google, console, ko */
 'use strict';
 
 /*
@@ -20,7 +20,7 @@ var rawData = [
 	},
 	{
 		name: "Paul Revere House",
-		address: "19 N Square, Boston, MA 02113",
+		address: "19 N Square, Boston, MA 02113"
 	},
 	{
 		name: "Massachusetts State House",
@@ -51,7 +51,6 @@ var rawData = [
 * to be able to switch between datasets... didn't actually end up doing that.
 */
 var Model = function(data) {
-	var data = data;
 	/*
 	* Model for the Place object
 	* We could use a raw JSON object, but this seems like more fun...
@@ -97,7 +96,7 @@ Octopus.prototype.setCurrentPlace = function(place){
 		this.currentPlace().marker.setIcon(null); //un-star prev marker
 	}
 	place.marker.setIcon({
-		url: 'img/star.svg', //star new marker
+		url: 'img/star.svg' //star new marker
 	});
 
 	var self = this;
@@ -119,7 +118,7 @@ Octopus.prototype.setCurrentPlace = function(place){
 			/* when ajax calls are complete, display everything */
 			self.infoWindow.setContent(document.getElementById("infoWindowTemplate").innerHTML);
 			self.infoWindow.open(self.map, place.marker);
-    		//self.map.setCenter(place.marker.getPosition())
+			//self.map.setCenter(place.marker.getPosition())
 			if(document.getElementById("infoWindowTemplate").innerHTML){
 				ko.cleanNode(document.getElementById("infoWindow"));
 			}
@@ -137,8 +136,6 @@ Octopus.prototype.setCurrentPlace = function(place){
 * or if we find that we already have the articles data from a previous ajax call
 */
 Octopus.prototype.getWikiArticles = function(place, done){
-
-	var place = place;
 
 	if(place.articles === null){
 
@@ -160,8 +157,8 @@ Octopus.prototype.getWikiArticles = function(place, done){
 			timeout: 5000,
 			dataType: 'jsonp',
 			headers: {
-	            'Api-User-Agent': 'Neighborhood-App/1.0'
-	        }
+				'Api-User-Agent': 'Neighborhood-App/1.0'
+			}
 		}).done(function(data){
 			place.articles = [];
 
@@ -190,7 +187,6 @@ Octopus.prototype.getWikiArticles = function(place, done){
 * or if we find that we already have the image data from a previous ajax call
 */
 Octopus.prototype.getImages = function(place, done){
-	var place = place;
 
 	if(place.images === null){
 
@@ -233,7 +229,6 @@ Octopus.prototype.getImages = function(place, done){
 Octopus.prototype.createMarker = function(place, done){
 
 	var self = this;
-	var place = place;
 
 	/*
 	* ajax request for gmaps geocode
@@ -262,7 +257,7 @@ Octopus.prototype.createMarker = function(place, done){
 
 		} else {
 
-			console.log('Error retreving lat/long for ' + ''); //the API is rate limited, so this is kinda useful
+			console.log('Error retreving lat/long for ' + '');
 
 			self.infoWindow.setContent('Error: no geodata. You may have used all your geocode API credits :(');
 
@@ -280,20 +275,13 @@ Octopus.prototype.initMap = function() {
 	var height = window.innerHeight;
 	document.getElementById("mapContainer").style.height = height + 'px';
 	var styles = [
-	  {
-	    stylers: [
-	      { saturation: -50 }
-	    ]
-	  },{
-	    featureType: "road",
-	    elementType: "geometry",
-	    stylers: [
-	      { lightness: 100 },
-	      { visibility: "simplified" }
-	    ]
-	  }
-	];
- 	// Create a map object and specify the DOM element for display.
+		{stylers: [{ saturation: -50 }]},
+		{featureType: "road", elementType: "geometry", stylers: [
+			{ lightness: 100 },
+			{ visibility: "simplified" }
+		]
+	}];
+	// Create a map object and specify the DOM element for display.
 	var map = new google.maps.Map(document.getElementById('map'), {
 		center: {lat: 42.3551, lng: -71.0656}, //boston common...
 		scrollwheel: true,
@@ -301,12 +289,11 @@ Octopus.prototype.initMap = function() {
 		styles: styles,
 		mapTypeId: google.maps.MapTypeId.TERRAIN,
 		mapTypeControl: false,
-  		zoomControl: true,
-  		mapTypeControl: false,
-  		scaleControl: false,
-  		streetViewControl: false,
-  		rotateControl: false,
-  		fullscreenControl: false,
+		zoomControl: true,
+		scaleControl: false,
+		streetViewControl: false,
+		rotateControl: false,
+		fullscreenControl: false
 	});
 
 	/* resize map container when the window is resized */
