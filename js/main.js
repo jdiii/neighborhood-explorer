@@ -301,9 +301,9 @@ Octopus.prototype.initMap = function() {
 	];
  	// Create a map object and specify the DOM element for display.
 	var map = new google.maps.Map(document.getElementById('map'), {
-		center: {lat: 42.3736, lng: -71.1061},
+		center: {lat: 42.3551, lng: -71.0656}, //boston common...
 		scrollwheel: true,
-		zoom: 13,
+		zoom: 12,
 		styles: styles,
 		mapTypeId: google.maps.MapTypeId.TERRAIN,
 		mapTypeControl: false,
@@ -313,8 +313,6 @@ Octopus.prototype.initMap = function() {
   		streetViewControl: false,
   		rotateControl: false,
   		fullscreenControl: false,
-		scrollwheel: false, //I was getting weird scrolling effects so added some options (none seemed to do anything...)
-		draggable: false
 	});
 
 	/* resize map container when the window is resized */

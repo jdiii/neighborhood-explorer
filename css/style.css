@@ -87,7 +87,7 @@ body {
 */
 .nav {
 	display: none;
-	position: absolute;
+	position: fixed;
 	left: 0;
 	top: 0;
 	bottom: 0;
@@ -95,25 +95,25 @@ body {
 	background-color: rgba(85,98,112,0.9);
 	color: white;
 	text-align: center;
-	z-index: 10000;
+	z-index: 10000; /* probably not necessary */
+	box-sizing: border-box;
+	overflow: scroll;
 }
 
 .nav__search {
 	margin: 1em auto;
 }
-.nav2 {
-}
 .nav__search__input {
-	font-size: 1.2em;
+	font-size: 1.5em;
 	border: 0.2em #1BB0CE solid;
 	border-radius: 0.2em;
 	padding: 0.2em;
-	width: 320px;
+	width: 300px;
 }
 .nav__list__item {
 	max-width: 320px;
 	margin: 0.25em auto; /*TODO add media query*/
-	font-size: 1.2em;
+	font-size: 1.5em;
 	background-color: #1BB0CE;
 	cursor: pointer;
 	clear: both;
