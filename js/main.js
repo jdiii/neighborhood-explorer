@@ -1,4 +1,5 @@
-'use strict'
+'use strict';
+/* global google */
 
 /*
 * In lieu of using an actual database, passing this "raw data" to my Model.
@@ -68,7 +69,6 @@ var Model = function(data) {
 	};
 	//places is the array of Places
 	this.places = (function(){
-		console.log(model);
 		var placeList = [];
 		for(var i = 0; i < data.length; i++){
 			placeList.push(new Place(data[i].name, data[i].address, data[i].comment));
@@ -236,7 +236,7 @@ Octopus.prototype.getImages = function(place, done){
 * @param place is the place to add a marker to
 * @param done should be callback function to execute on completion of the ajax request
 */
-Octopus.prototype.createMarker = function(place,done){
+Octopus.prototype.createMarker = function(place, done){
 
 	var self = this;
 	var place = place;
@@ -280,7 +280,7 @@ Octopus.prototype.createMarker = function(place,done){
 };
 /*
 * Google Maps initialization
-* Add the map as a property of octopus.
+* @return map
 */
 Octopus.prototype.initMap = function() {
 	var height = window.innerHeight;
@@ -386,48 +386,53 @@ Octopus.prototype.handleKeyup = function(query){
 
 };
 
+/* Called by Google Maps successful loading*/
+function init(){
+	/* Initialize model and octopus*/
+	var model = new Model(rawData);
+	var octopus = new Octopus(model);
+	/* set up Map */
+	octopus.map = octopus.initMap();
 
-/* Initialize model and octopus*/
-var model = new Model(rawData);
-var octopus = new Octopus(model);
-/* set up Map */
-octopus.map = octopus.initMap();
-
-/* initialize map markers */
-octopus.places().forEach(function(place){
-	octopus.createMarker(place, function(marker){
-		marker.setMap(octopus.map);
-		marker.addListener('click',function(){
-			octopus.setCurrentPlace(place);
+	/* initialize map markers */
+	octopus.places().forEach(function(place){
+		octopus.createMarker(place, function(marker){
+			marker.setMap(octopus.map);
+			marker.addListener('click',function(){
+				octopus.setCurrentPlace(place);
+			});
 		});
 	});
-});
-/* apply knockout bindings */
-ko.applyBindings(octopus);
+	/* apply knockout bindings */
+	ko.applyBindings(octopus);
 
 
-/*
-* Event listeners for the hamburger menu and navigation
-*/
+	/*
+	* Event listeners for the hamburger menu and navigation
+	*/
 
-//Open the navigation menu
-$(".header").on('click','.header__elem__hamburger',function(){
-	$('.nav').toggle();
-	octopus.infoWindow.close();
-	if(octopus.currentPlace()){
-		octopus.currentPlace().marker.setIcon(null);
-	}
-});
-//close the navigation menu when close buttons are pressed
-$(".nav__list__close, .nav__float__close").on('click',function(){
-	$('.nav').toggle();
-});
-//when Search input is focused, clear out the filler "Filter..." text
-$(".nav__search__input").on('focus',function(){
-	var val = $(this).val();
-	octopus.handleFocus(val);
-});
-//refine search results every time you enter a letter in search input
-$(".nav__search__input").on('keyup',function(){
-	octopus.handleKeyup($(".nav__search__input").val());
-});
+	//Open the navigation menu
+	$(".header").on('click','.header__elem__hamburger',function(){
+		$('.nav').toggle();
+		octopus.infoWindow.close();
+		if(octopus.currentPlace()){
+			octopus.currentPlace().marker.setIcon(null);
+		}
+	});
+	//close the navigation menu when close buttons are pressed
+	$(".nav__list__close, .nav__float__close").on('click',function(){
+		$('.nav').toggle();
+	});
+	//when Search input is focused, clear out the filler "Filter..." text
+	$(".nav__search__input").on('focus',function(){
+		var val = $(this).val();
+		octopus.handleFocus(val);
+	});
+	//refine search results every time you enter a letter in search input
+	$(".nav__search__input").on('keyup',function(){
+		octopus.handleKeyup($(".nav__search__input").val());
+	});
+}
+function googleError(){
+	$("#map").css('margin','auto 100px').text('There was an error loading the Google Maps API. This app won\'t function without it ');
+}

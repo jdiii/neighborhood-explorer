@@ -32,7 +32,7 @@
 				<input class="nav__search__input" type="text" value="Filter..."></input>
 				<div class="nav__list__item nav__list__close">Close Menu</div>
 			</div>
-			
+
 		</section>
 
 		<script type="text/html" id="infoWindowTemplate">
@@ -65,9 +65,8 @@
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 		<script src="js/lib/knockout-3.4.0.js"></script>
-		<script src="js/lib/oauth-signature.min.js"></script>
-		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCbJSOXKFCM71Qwine69SdJOU4DIzcwj2s&libraries=places"></script>
 		<script src="js/main.js"></script>
+		<script async defer src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCbJSOXKFCM71Qwine69SdJOU4DIzcwj2s&libraries=places&callback=init" onerror="googleError()"></script>
 	</body>
 
 
