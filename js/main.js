@@ -41,10 +41,6 @@ var rawData = [
 	{
 		name: "Quincy Market",
 		address: "1 Faneuil Hall Square, Quincy Market, Boston, MA 02109"
-	},
-	{
-		name: "Old State House",
-		address: "206 Washington St, Boston, MA 02109"
 	}
 ];
 
@@ -165,9 +161,6 @@ Octopus.prototype.getWikiArticles = function(place, done){
 			headers: {
 	            'Api-User-Agent': 'Neighborhood-App/1.0'
 	        },
-			error: function(){
-				place.articles = {error: 'There was an error retrieving articles.'};
-			},
 			success: function(data){
 
 				place.articles = [];
@@ -182,6 +175,9 @@ Octopus.prototype.getWikiArticles = function(place, done){
 
 				done(place);
 			}
+		}).fail(function(){
+			place.articles = {error: 'There was an error retrieving articles.'};
+			done(place);
 		});
 
 	} else {
@@ -217,13 +213,13 @@ Octopus.prototype.getImages = function(place, done){
 			method: 'GET',
 			timeout: 5000, //after 5 seconds, --> error
 			dataType: 'json',
-			error: function(e){
-				place.images = {error: "Error retrieving images"};
-			},
 			success: function(data){
 				place.images = data.photos.photo;
 				done(place);
 			}
+		}).fail(function(){
+			place.images = {error: "Error retrieving images"};
+			done(place);
 		});
 
 	} else {
@@ -354,7 +350,7 @@ Octopus.prototype.handleKeyup = function(query){
 	var self = this;
 
 	if(query == ''){
-		self.places(model.places);
+		self.places(self.model.places);
 		this.places().forEach(function(p){
 			p.marker.setVisible(true);
 		});
@@ -365,7 +361,7 @@ Octopus.prototype.handleKeyup = function(query){
 	if(query != ''){
 		/* make a new places array*/
 		var places = [];
-		octopus.model.places.forEach(function(p){
+		self.model.places.forEach(function(p){
 			var q = query.toLowerCase();
 			if(p.name.toLowerCase().indexOf(q) != -1 || p.address.toLowerCase().indexOf(q) != -1){
 				places.push(p);
@@ -386,6 +382,8 @@ Octopus.prototype.handleKeyup = function(query){
 
 };
 
+
+var viewmodel = null; //event listeners will attach to this global reference
 /* Called by Google Maps successful loading*/
 function init(){
 	/* Initialize model and octopus*/
@@ -405,34 +403,34 @@ function init(){
 	});
 	/* apply knockout bindings */
 	ko.applyBindings(octopus);
-
-
-	/*
-	* Event listeners for the hamburger menu and navigation
-	*/
-
-	//Open the navigation menu
-	$(".header").on('click','.header__elem__hamburger',function(){
-		$('.nav').toggle();
-		octopus.infoWindow.close();
-		if(octopus.currentPlace()){
-			octopus.currentPlace().marker.setIcon(null);
-		}
-	});
-	//close the navigation menu when close buttons are pressed
-	$(".nav__list__close, .nav__float__close").on('click',function(){
-		$('.nav').toggle();
-	});
-	//when Search input is focused, clear out the filler "Filter..." text
-	$(".nav__search__input").on('focus',function(){
-		var val = $(this).val();
-		octopus.handleFocus(val);
-	});
-	//refine search results every time you enter a letter in search input
-	$(".nav__search__input").on('keyup',function(){
-		octopus.handleKeyup($(".nav__search__input").val());
-	});
+	viewmodel = octopus;
 }
 function googleError(){
 	$("#map").css('margin','auto 100px').text('There was an error loading the Google Maps API. This app won\'t function without it ');
 }
+
+/*
+* Event listeners for the hamburger menu and navigation
+*/
+
+//Open the navigation menu
+$(".header").on('click','.header__elem__hamburger',function(){
+	$('.nav').toggle();
+	viewmodel.infoWindow.close();
+	if(viewmodel.currentPlace()){
+		viewmodel.currentPlace().marker.setIcon(null);
+	}
+});
+//close the navigation menu when close buttons are pressed
+$(".nav__list__close, .nav__float__close").on('click',function(){
+	$('.nav').toggle();
+});
+//when Search input is focused, clear out the filler "Filter..." text
+$(".nav__search__input").on('focus',function(){
+	var val = $(this).val();
+	viewmodel.handleFocus(val);
+});
+//refine search results every time you enter a letter in search input
+$(".nav__search__input").on('keyup',function(){
+	viewmodel.handleKeyup($(".nav__search__input").val());
+});
