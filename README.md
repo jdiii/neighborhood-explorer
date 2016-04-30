@@ -23,6 +23,3 @@ The ViewModel (called octopus in the code) handles a few things:
 
 ### View
 Knockout.js is used to generate content in the UI
-
-### Events
-JQuery is used to set up certain UI events, like opening the hamburger menu
