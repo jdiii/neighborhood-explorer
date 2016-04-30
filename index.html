@@ -12,7 +12,7 @@
 	<body>
 
 		<section class="header">
-			<div class="header__elem header__elem__hamburger"></div>
+			<div class="header__elem header__elem__hamburger" data-bind="click: function(){ hamburger(true); }"></div>
 			<div class="header__elem header__elem__h1">Tour Boston!</div>
 		</section>
 
@@ -20,17 +20,16 @@
 			<div id="map"></div>
 		</section>
 
-		<section class="nav">
+		<section class="nav" data-bind="style: {display: hamburger() ? 'block' : 'none'}">
 
-			<div class="nav__float__close">Close</div>
+			<div class="nav__float__close" data-bind="click: function(){ hamburger(false) }">Close</div>
 
 			<div class="nav__list" data-bind="foreach: filteredPlaces">
-				<div class="nav__list__item" data-bind="click: function() { viewmodel.setCurrentPlace($data); $('.nav').toggle();}, text: $data.name"></div>
+				<div class="nav__list__item" data-bind="click: function() { viewmodel.setCurrentPlace($data); viewmodel.hamburger(false)}, text: $data.name"></div>
 			</div>
 
 			<div class="nav__search">
 				<input class="nav__search__input" type="text" data-bind="textInput: search"></input>
-				<div class="nav__list__item nav__list__close">Close Menu</div>
 			</div>
 
 		</section>

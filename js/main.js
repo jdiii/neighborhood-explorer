@@ -85,14 +85,23 @@ var Octopus = function(model){
 	self.places = ko.observableArray(self.model.places);
 	self.currentPlace = ko.observable(null);
 
+	/* init gmaps infoWindow */
 	self.infoWindow = new google.maps.InfoWindow();
 	self.infoWindow.addListener('closeclick',function(){
 		self.currentPlace().marker.setIcon(null);
 	});
 
-	self.mapCenter = {lat: 42.3551, lng: -71.0656};
+	self.mapCenter = {lat: 42.3551, lng: -71.0656}; //boston common
 
-	self.search = ko.observable('');
+	/* search implementation */
+	self.search = ko.observable('Filter...');
+	/* clear out the default search text on focus */
+	$('.nav__search__input').on('focus',function(){
+		if(self.search() == "Filter..."){
+			self.search('');
+		}
+	});
+	/* filteredPlaces is which places are shown in the list and map currently */
 	self.filteredPlaces = ko.computed(function(){
 		if (self.search() == 'Filter...' || self.search() == ''){
 			self.places().forEach(function(p){
@@ -114,6 +123,10 @@ var Octopus = function(model){
 			return matched;
 		}
 	});
+
+	/* hamburger menu visibility */
+	self.hamburger = ko.observable(false);
+
 };
 
 Octopus.prototype.setCurrentPlace = function(place){
@@ -332,9 +345,6 @@ Octopus.prototype.initMap = function() {
 };
 
 
-
-//event listeners will attach to this global reference
-//useful to have this global reference for debugging... would remove from a production app
 var viewmodel = null;
 
 /* Called by Google Maps successful loading*/
@@ -362,20 +372,3 @@ function init(){
 function googleError(){
 	$("#map").css('margin','auto 100px').text('There was an error loading the Google Maps API. This app won\'t function without it ');
 }
-
-/*
-* Event listeners for the hamburger menu and navigation
-*/
-
-//Open the navigation menu
-$(".header").on('click','.header__elem__hamburger',function(){
-	$('.nav').toggle();
-	viewmodel.infoWindow.close();
-	if(viewmodel.currentPlace()){
-		viewmodel.currentPlace().marker.setIcon(null);
-	}
-});
-//close the navigation menu when close buttons are pressed
-$(".nav__list__close, .nav__float__close").on('click',function(){
-	$('.nav').toggle();
-});

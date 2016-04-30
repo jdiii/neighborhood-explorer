@@ -95,9 +95,11 @@ body {
 	background-color: rgba(85,98,112,0.9);
 	color: white;
 	text-align: center;
-	z-index: 10000; /* probably not necessary */
 	box-sizing: border-box;
 	overflow: scroll;
+}
+.nav__show {
+	display: block;
 }
 
 .nav__list {
