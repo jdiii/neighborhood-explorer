@@ -102,13 +102,13 @@ var Octopus = function(model){
 			});
 			return self.places();
 		} else {
-			var matched = [];
-			self.places().forEach(function(p){
+			var matched = self.places().filter(function(p){
 				if(p.name.toLowerCase().indexOf(self.search().toLowerCase()) > -1){
-					p.marker.map = self.map;
-					matched.push(p);
+					p.marker.setMap(self.map);
+					return true;
 				} else {
 					p.marker.setMap(null);
+					return false;
 				}
 			});
 			return matched;
