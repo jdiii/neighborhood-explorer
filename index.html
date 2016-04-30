@@ -59,7 +59,10 @@
 					</div>
 					<div data-bind="foreach: images">
 						<a class="currentPlace__section__images" data-bind="attr: {href: 'https://www.flickr.com/photos/' + $data.owner + '/' + $data.id}" target=_blank>
-							<img data-bind="attr: {src: 'https://farm' + $data.farm + '.staticflickr.com/' + $data.server + '/' + $data.id + '_' + $data.secret + '_s.jpg'}">
+							<object data-bind="attr: {data: 'https://farm' + $data.farm + '.staticflickr.com/' + $data.server + '/' + $data.id + '_' + $data.secret + '_s.jpg'}" type="image/jpg">
+								<img src="img/404.png">
+							</object>
+
 						</a>
 					</div>
 				</section>
