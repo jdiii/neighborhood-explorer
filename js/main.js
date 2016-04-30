@@ -87,6 +87,7 @@ var Octopus = function(model){
 	self.infoWindow.addListener('closeclick',function(){
 		self.currentPlace().marker.setIcon(null);
 	});
+	self.mapCenter = {lat: 42.3551, lng: -71.0656};
 };
 
 Octopus.prototype.setCurrentPlace = function(place){
@@ -234,37 +235,35 @@ Octopus.prototype.createMarker = function(place, done){
 	* ajax request for gmaps geocode
 	*/
 	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + place.address;
-	jQuery.getJSON(url, function(data){
-		if(data.status == 'OK'){
+	var markerError = false;
+	jQuery.ajax(url, {
+		dataType: 'json'
+	}).done(function(data){
 
-			console.log('Status OK for ' + place.name + '\'s geodata.');
+		place.lat = data.results[0].geometry.location.lat;
+		place.lng = data.results[0].geometry.location.lng;
 
-			place.lat = data.results[0].geometry.location.lat;
-			place.lng = data.results[0].geometry.location.lng;
+	}).fail(function() {
 
-			var latlng = {lat: place.lat, lng: place.lng};
+		console.log('Error retreving lat/long for ' + '');
 
-			var marker = new google.maps.Marker({
-				position: latlng,
-				title: "Hello World!",
-				animation: google.maps.Animation.DROP,
-				draggable: false
-			});
+		place.lat = self.mapCenter.lat + 0.02*Math.random();
+		place.lng = self.mapCenter.lng + 0.02*Math.random();
+		markerError = true;
 
-			place.marker = marker;
+	}).always(function(){
+		var latlng = {lat: place.lat, lng: place.lng};
 
-			done(place.marker);
+		var marker = new google.maps.Marker({
+			error: markerError,
+			position: latlng,
+			animation: google.maps.Animation.DROP,
+			draggable: false
+		});
 
-		} else {
+		place.marker = marker;
 
-			console.log('Error retreving lat/long for ' + '');
-
-			self.infoWindow.setContent('Error: no geodata. You may have used all your geocode API credits :(');
-
-			self.infoWindow.open(self.map); //display error message onscreen
-
-			done(place.marker);
-		}
+		done(place.marker);
 	});
 };
 /*
@@ -283,7 +282,7 @@ Octopus.prototype.initMap = function() {
 	}];
 	// Create a map object and specify the DOM element for display.
 	var map = new google.maps.Map(document.getElementById('map'), {
-		center: {lat: 42.3551, lng: -71.0656}, //boston common...
+		center: this.mapCenter, //boston common...
 		scrollwheel: true,
 		zoom: 12,
 		styles: styles,

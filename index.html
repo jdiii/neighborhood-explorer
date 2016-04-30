@@ -39,6 +39,9 @@
 			<section id="infoWindow" data-bind="with: currentPlace()">
 				<h1 class="currentPlace__name" data-bind="text: name"></h1>
 				<p class="currentPlace__address" data-bind="text: address"></p>
+				<div class="currentPlace__markerError" data-bind="if: marker.error">
+					<p>There was an error retrieving the geo-data for this marker and this is probably not the right location. You may have run out of Google Maps API credits.</p>
+				</div>
 				<section class="currentPlace__section">
 					<div data-bind="if: articles.error">
 						<span data-bind="text: articles.error"></span>
@@ -49,7 +52,7 @@
 							<a target="_blank" data-bind="attr: {href: 'https://en.wikipedia.com/wiki/' + $data.title}, text: $data.title"></a>
 						</div>
 					</span>
-				</div>
+				</section>
 				<section class="currentPlace__section">
 					<div data-bind="if: images.error">
 						<span data-bind="text: images.error"></span>
@@ -59,7 +62,7 @@
 							<img data-bind="attr: {src: 'https://farm' + $data.farm + '.staticflickr.com/' + $data.server + '/' + $data.id + '_' + $data.secret + '_s.jpg'}">
 						</a>
 					</div>
-				</div>
+				</section>
 			</section>
 		</script>
 

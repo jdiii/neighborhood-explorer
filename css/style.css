@@ -175,3 +175,6 @@ body {
 	height: 1em;
 	width: 1em;
 }
+.currentPlace__markerError {
+	color: red;
+}
