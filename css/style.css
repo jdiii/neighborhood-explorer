@@ -100,8 +100,13 @@ body {
 	overflow: scroll;
 }
 
+.nav__list {
+	clear: both;
+}
+
 .nav__search {
 	margin: 1em auto;
+	clear: both;
 }
 .nav__search__input {
 	font-size: 1.5em;
@@ -116,7 +121,6 @@ body {
 	font-size: 1.5em;
 	background-color: #1BB0CE;
 	cursor: pointer;
-	clear: both;
 }
 .nav__float__close {
 	float: right;

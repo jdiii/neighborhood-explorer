@@ -80,14 +80,40 @@ var Model = function(data) {
 */
 var Octopus = function(model){
 	var self = this;
+	self.map = null;
 	self.model = model;
 	self.places = ko.observableArray(self.model.places);
 	self.currentPlace = ko.observable(null);
+
 	self.infoWindow = new google.maps.InfoWindow();
 	self.infoWindow.addListener('closeclick',function(){
 		self.currentPlace().marker.setIcon(null);
 	});
+
 	self.mapCenter = {lat: 42.3551, lng: -71.0656};
+
+	self.search = ko.observable('');
+	self.filteredPlaces = ko.computed(function(){
+		if (self.search() == 'Filter...' || self.search() == ''){
+			self.places().forEach(function(p){
+				if(p.marker){
+					p.marker.setMap(self.map);
+				}
+			});
+			return self.places();
+		} else {
+			var matched = [];
+			self.places().forEach(function(p){
+				if(p.name.toLowerCase().indexOf(self.search().toLowerCase()) > -1){
+					p.marker.map = self.map;
+					matched.push(p);
+				} else {
+					p.marker.setMap(null);
+				}
+			});
+			return matched;
+		}
+	});
 };
 
 Octopus.prototype.setCurrentPlace = function(place){
@@ -230,10 +256,6 @@ Octopus.prototype.getImages = function(place, done){
 Octopus.prototype.createMarker = function(place, done){
 
 	var self = this;
-
-	/*
-	* ajax request for gmaps geocode
-	*/
 	var url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + place.address;
 	var markerError = false;
 	jQuery.ajax(url, {
@@ -245,8 +267,12 @@ Octopus.prototype.createMarker = function(place, done){
 
 	}).fail(function() {
 
-		console.log('Error retreving lat/long for ' + '');
+		console.warn('Error retreving lat/long for ' + '');
 
+		/*
+		* If the ajax call fails, place the markers on the map with fake locations...
+		* Show an error message explaining that the locations are incorrect
+		*/
 		place.lat = self.mapCenter.lat + 0.02*Math.random();
 		place.lng = self.mapCenter.lng + 0.02*Math.random();
 		markerError = true;
@@ -306,68 +332,11 @@ Octopus.prototype.initMap = function() {
 };
 
 
-/*
-* handleFocus is fired when there's a focus event on the search input
-* Takes an @param query from the input textbox
-* If the textbox contains the filler text "Filter...",
-* it gets cleared out of the textbox.
-*/
-Octopus.prototype.handleFocus = function(query){
 
-	if(query == 'Filter...'){
-		$('.nav__search__input').val('');
-	}
+//event listeners will attach to this global reference
+//useful to have this global reference for debugging... would remove from a production app
+var viewmodel = null;
 
-};
-
-/*
-* handleKeyup takes a search @param query
-* and filters which map markers are shown
-* and which navigation links are shown
-* based on the search result
-*
-* searches both place.address and place.name for the query string
-*/
-
-Octopus.prototype.handleKeyup = function(query){
-
-	var self = this;
-
-	if(query == ''){
-		self.places(self.model.places);
-		this.places().forEach(function(p){
-			p.marker.setVisible(true);
-		});
-		this.places();
-		this.currentPlace(null);
-	}
-
-	if(query != ''){
-		/* make a new places array*/
-		var places = [];
-		self.model.places.forEach(function(p){
-			var q = query.toLowerCase();
-			if(p.name.toLowerCase().indexOf(q) != -1 || p.address.toLowerCase().indexOf(q) != -1){
-				places.push(p);
-			}
-		});
-		/* set marker visibility to false for all places */
-		self.places().forEach(function(p){
-			p.marker.setVisible(false);
-		});
-		/* set marker visibility to true for places in the array */
-		places.forEach(function(p){
-			p.marker.setVisible(true);
-		});
-		/* send octopus the new places */
-		self.places(places);
-		self.currentPlace(null);
-	}
-
-};
-
-
-var viewmodel = null; //event listeners will attach to this global reference
 /* Called by Google Maps successful loading*/
 function init(){
 	/* Initialize model and octopus*/
@@ -389,6 +358,7 @@ function init(){
 	ko.applyBindings(octopus);
 	viewmodel = octopus;
 }
+
 function googleError(){
 	$("#map").css('margin','auto 100px').text('There was an error loading the Google Maps API. This app won\'t function without it ');
 }
@@ -408,13 +378,4 @@ $(".header").on('click','.header__elem__hamburger',function(){
 //close the navigation menu when close buttons are pressed
 $(".nav__list__close, .nav__float__close").on('click',function(){
 	$('.nav').toggle();
-});
-//when Search input is focused, clear out the filler "Filter..." text
-$(".nav__search__input").on('focus',function(){
-	var val = $(this).val();
-	viewmodel.handleFocus(val);
-});
-//refine search results every time you enter a letter in search input
-$(".nav__search__input").on('keyup',function(){
-	viewmodel.handleKeyup($(".nav__search__input").val());
 });
