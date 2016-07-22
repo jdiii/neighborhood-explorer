@@ -1,5 +1,4 @@
 # Tour Boston!
-This is the "neighborhood map" project for the Udacity front-end nanodegree.
 
 ## Installation
   1. `git clone`
